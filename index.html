@@ -299,6 +299,8 @@ body { margin: 0; }
 .lb-bar i { display: block; height: 100%; }
 .g-done .lb-bar i { background: var(--ok); } .g-high .lb-bar i { background: var(--lb-orange); } .g-low .lb-bar i { background: var(--danger); }
 @media (max-width: 400px) { .lb-row button { grid-template-columns: 2em minmax(0, 1fr) 3em 48px; } .lb-state { display: none; } }
+.update-bar { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); width: min(440px, calc(100vw - 24px)); display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px 10px 10px; background: var(--navy); color: var(--navy-ink); border: 2px solid var(--red); border-radius: 14px; box-shadow: 0 10px 30px rgb(0 0 0 / 30%); font-weight: 800; }
+.update-bar button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--red); color: #fff; font: inherit; font-weight: 900; cursor: pointer; }
 .ok-msg { color: var(--ok); font-weight: 700; }
 .brand-name { white-space: nowrap; }
 button.brand .brand-name, button.brand .brand-org { display: block; }
@@ -392,6 +394,8 @@ const REFRESH_MS = 15000;
 const LOW = 0.3;
 const ELECTION_DATE = "2026-10-27";
 const TOKEN_KEY = "kalpi-token";
+// גרסת האפליקציה. בכל העלאה מעדכנים כאן וגם ב-version.json, ומי שהאתר פתוח אצלו יקבל הודעת עדכון.
+const APP_VERSION = "2026-10-22.5";
 
 // ─── helpers ───────────────────────────────────────────────────
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -896,6 +900,28 @@ document.getElementById("optBig").addEventListener("click", () => { prefs.big = 
 document.getElementById("optContrast").addEventListener("click", () => { prefs.contrast = !prefs.contrast; applyPrefs(); });
 panel.addEventListener("keydown", (e) => { if (e.key === "Escape") { panel.hidden = true; a11yBtn.setAttribute("aria-expanded", "false"); a11yBtn.focus(); } });
 applyPrefs();
+
+// ─── new version notice ────────────────────────────────────────
+let updateShown = false;
+async function checkForUpdate() {
+  if (updateShown) return;
+  try {
+    const res = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
+    const { version } = await res.json();
+    if (version && version !== APP_VERSION) showUpdateBar();
+  } catch {}
+}
+function showUpdateBar() {
+  updateShown = true;
+  const bar = document.createElement("div");
+  bar.className = "update-bar"; bar.setAttribute("role", "status");
+  bar.innerHTML = `<span>🔔 יש עדכון לאתר</span><button type="button">עדכון עכשיו</button>`;
+  bar.querySelector("button").addEventListener("click", () => location.reload());
+  document.body.appendChild(bar);
+}
+setInterval(() => { if (!document.hidden) checkForUpdate(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkForUpdate(); });
+checkForUpdate();
 
 // auto refresh every 15 s while the app is visible; refresh at once when returning to it
 setInterval(() => { if (!document.hidden) refresh(); }, REFRESH_MS);
