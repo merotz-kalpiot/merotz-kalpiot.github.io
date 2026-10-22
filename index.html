@@ -301,6 +301,8 @@ body { margin: 0; }
 @media (max-width: 400px) { .lb-row button { grid-template-columns: 2em minmax(0, 1fr) 3em 48px; } .lb-state { display: none; } }
 .ok-msg { color: var(--ok); font-weight: 700; }
 .brand-name { white-space: nowrap; }
+button.brand .brand-name, button.brand .brand-org { display: block; }
+button.brand { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-align: start; cursor: pointer; }
 @media (max-width: 520px) {
   .top .wrap { flex-wrap: wrap; row-gap: 4px; padding-block: 6px 8px; }
   .top .slogan { order: 3; flex-basis: 100%; justify-content: center; font-size: .95rem; }
@@ -343,10 +345,10 @@ body { margin: 0; }
 <a class="skip" href="#app">דלג לתוכן</a>
 <header class="top">
   <div class="wrap">
-    <div class="brand">
+    <button type="button" class="brand" id="homeBtn" aria-label="מרוץ האיוש – חזרה לדף הראשי">
       <svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-4 32 32)"><rect x="12" y="4" width="40" height="56" rx="3" fill="#fff"/><text x="32" y="40" text-anchor="middle" font-family="Heebo, Arial" font-weight="900" font-size="34" fill="#000">ג</text><rect x="19" y="48" width="26" height="2.5" rx="1" fill="#000"/><rect x="22" y="53" width="20" height="2.5" rx="1" fill="#000"/></g></svg>
-      <div><div class="brand-name">מרוץ האיוש</div><div class="brand-org">שלומי אמונים – מחזיקי הדת</div></div>
-    </div>
+      <span><span class="brand-name">מרוץ האיוש</span><span class="brand-org">שלומי אמונים – מחזיקי הדת</span></span>
+    </button>
     <span class="grow"></span>
     <span class="slogan" aria-label="הזכות להיות חרדי!"><b>הזכות</b> להיות חרדי!</span><button class="logout" id="adminBtn" hidden>ניהול</button><button class="logout" id="logout" hidden>יציאה</button>
   </div>
@@ -557,6 +559,11 @@ app.addEventListener("submit", async (e) => {
   }
 });
 logoutBtn.addEventListener("click", () => signOut());
+document.getElementById("homeBtn").addEventListener("click", () => {
+  if (!S.token) return;
+  S.view = null; S.admin.edit = null; S.admin.msg = "";
+  render(); window.scrollTo(0, 0);
+});
 adminBtn.addEventListener("click", () => { S.view = S.view === "__admin" ? null : "__admin"; if (S.view) loadAdmin(); render(); window.scrollTo(0, 0); });
 
 // ─── main views ────────────────────────────────────────────────
