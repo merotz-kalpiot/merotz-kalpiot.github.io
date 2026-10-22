@@ -301,6 +301,14 @@ body { margin: 0; }
 @media (max-width: 400px) { .lb-row button { grid-template-columns: 2em minmax(0, 1fr) 3em 48px; } .lb-state { display: none; } }
 .update-bar { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); width: min(440px, calc(100vw - 24px)); display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px 10px 10px; background: var(--navy); color: var(--navy-ink); border: 2px solid var(--red); border-radius: 14px; box-shadow: 0 10px 30px rgb(0 0 0 / 30%); font-weight: 800; }
 .update-bar button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--red); color: #fff; font: inherit; font-weight: 900; cursor: pointer; }
+.slot-city { display: grid; gap: 6px; }
+.slot-city h3 { margin-top: 4px; }
+.slots { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+@media (min-width: 760px) { .slots { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
+.slot { border: 1px solid var(--border); border-inline-start: 4px solid var(--danger); border-radius: 12px; padding: 8px 12px; display: grid; gap: 2px; background: var(--surface); }
+.slot.obs { border-inline-start-color: var(--warn); }
+.slot-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.slot-shift { font-size: .82rem; font-weight: 800; color: var(--muted); white-space: nowrap; }
 .ok-msg { color: var(--ok); font-weight: 700; }
 .brand-name { white-space: nowrap; }
 button.brand .brand-name, button.brand .brand-org { display: block; }
@@ -395,7 +403,7 @@ const LOW = 0.3;
 const ELECTION_DATE = "2026-10-27";
 const TOKEN_KEY = "kalpi-token";
 // גרסת האפליקציה. בכל העלאה מעדכנים כאן וגם ב-version.json, ומי שהאתר פתוח אצלו יקבל הודעת עדכון.
-const APP_VERSION = "2026-10-22.5";
+const APP_VERSION = "2026-10-22.6";
 
 // ─── helpers ───────────────────────────────────────────────────
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -464,7 +472,7 @@ const errText = (e) => ERR[e?.message] || ERR.SERVER;
 
 // ─── state ─────────────────────────────────────────────────────
 const S = { token: null, email: "", isAdmin: false, data: null, list: [], view: null, q: "", chip: "", sort: "pct", loading: false, error: null, receivedAt: 0,
-  login: { step: "email", email: "" }, admin: { tab: "users", users: null, comms: null, cq: "", edit: null, busy: false, msg: "" } };
+  slots: {}, login: { step: "email", email: "" }, admin: { tab: "users", users: null, comms: null, cq: "", edit: null, busy: false, msg: "" } };
 const app = document.getElementById("app");
 const adminBtn = document.getElementById("adminBtn"), logoutBtn = document.getElementById("logout");
 
@@ -478,6 +486,7 @@ async function refresh(manual) {
     adminBtn.hidden = !S.isAdmin;
     S.loading = false;
     if (S.view !== "__admin") render(); // never wipe an admin form mid-edit
+    if (S.view && S.view !== "__admin") loadSlots(S.view);
     if (manual) toast("הנתונים עודכנו");
   } catch (e) {
     S.loading = false;
@@ -485,6 +494,19 @@ async function refresh(manual) {
     S.error = e.message === "LAYOUT" ? "layout" : "net";
     updateLive(); if (!S.data) render();
   }
+}
+
+// open slots of the community being viewed (refreshed together with the data)
+async function loadSlots(key) {
+  const cur = S.slots[key] || {};
+  S.slots[key] = { ...cur, loading: !cur.list };
+  try {
+    const out = await api("community", { key });
+    S.slots[key] = { list: out.slots, at: Date.now() };
+  } catch (e) {
+    S.slots[key] = { ...cur, loading: false, error: e.message };
+  }
+  if (S.view === key) render();
 }
 
 function signOut(message) {
@@ -699,7 +721,29 @@ function renderDetail() {
       <div class="tiles"><div class="tile"><div class="small muted">נותרו</div><div class="v">${c.rem}</div></div><div class="tile"><div class="small muted">משקיפים</div><div class="v">${c.obsSt} / ${c.obsTo}</div></div></div>
     </section>
   </div>`);
+  out.push(renderSlots(c));
   return out.join("");
+}
+
+function renderSlots(c) {
+  const sl = S.slots[c.key] || { loading: true };
+  let body;
+  if (sl.list) {
+    const byCity = {};
+    sl.list.forEach((x) => { (byCity[x.city || "ללא עיר"] = byCity[x.city || "ללא עיר"] || []).push(x); });
+    const shiftLabel = (x) => x.observer ? "משקיף" : x.shift === "1" || x.shift === "2" ? "משמרת " + x.shift : esc(x.shift);
+    body = sl.list.length ? Object.keys(byCity).map((city) => `<div class="slot-city"><h3>${esc(city)} <span class="muted small">(${byCity[city].length})</span></h3>
+      <ul class="slots">${byCity[city].map((x) => `<li class="slot${x.observer ? " obs" : ""}">
+        <div class="slot-top"><b>${x.kalpi ? "קלפי " + esc(x.kalpi) : "ברזל " + esc(x.barzel)}${x.kalpiType ? ` <span class="badge b-progress">${esc(x.kalpiType)}</span>` : ""}</b><span class="slot-shift">${shiftLabel(x)}</span></div>
+        ${x.place || x.address ? `<div class="small">${esc([x.place, x.address].filter(Boolean).join(" · "))}</div>` : ""}
+        ${x.hours ? `<div class="small muted">${/^[\d:\s–-]+$/.test(x.hours) ? `<bdi dir="ltr">${esc(x.hours)}</bdi>` : esc(x.hours)}</div>` : ""}
+      </li>`).join("")}</ul></div>`).join("") : `<p class="ok-msg">אין קלפיות פנויות – כל המשמרות אוישו. 🎉</p>`;
+    if (sl.error) body = `<p class="small err">לא הצלחנו לרענן את הרשימה. מוצג המידע האחרון.</p>` + body;
+  } else if (sl.error) {
+    body = `<p class="err">${sl.error === "BAD_REQUEST" ? "כדי לראות קלפיות פנויות צריך לעדכן את קוד השרת בגוגל (ראו הוראות)." : esc(errText({ message: sl.error }))}</p>`;
+  } else body = `<p class="muted">טוען את הקלפיות הפנויות…</p>`;
+  const n = sl.list ? ` <span class="muted">(${sl.list.length})</span>` : "";
+  return `<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">קלפיות פנויות${n}</h2>${body}</section>`;
 }
 
 // ─── admin ─────────────────────────────────────────────────────
@@ -834,7 +878,7 @@ function render() {
 app.addEventListener("click", async (e) => {
   const t = e.target.closest("[data-open],[data-chip],[data-act],[data-copy],[data-tab],[data-user],[data-edit],[data-del-person]");
   if (!t) return;
-  if (t.dataset.open) { S.view = t.dataset.open; render(); window.scrollTo(0, 0); return; }
+  if (t.dataset.open) { S.view = t.dataset.open; render(); window.scrollTo(0, 0); loadSlots(S.view); return; }
   if (t.dataset.chip !== undefined) {
     S.chip = t.dataset.chip; render();
     if (t.classList.contains("see-all")) document.getElementById("all")?.scrollIntoView({ block: "start" });

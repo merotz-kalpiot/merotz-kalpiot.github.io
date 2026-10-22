@@ -1,6 +1,6 @@
 // Keeps the app shell available offline so it opens instantly like an installed app.
 // Data requests (the Apps Script endpoint) always go to the network.
-const CACHE = "kalpi-v4";
+const CACHE = "kalpi-v5";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
