@@ -1,0 +1,18 @@
+{
+  "name": "מרוץ האיוש · שלומי אמונים",
+  "short_name": "מרוץ האיוש",
+  "description": "מצב איוש הקלפיות לפי קהילה – שלומי אמונים – מחזיקי הדת",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1b2350",
+  "theme_color": "#1b2350",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

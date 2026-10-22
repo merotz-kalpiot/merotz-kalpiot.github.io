@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b2350">
+<meta name="description" content="מצב איוש הקלפיות – שלומי אמונים">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="מרוץ האיוש">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>מרוץ האיוש · שלומי אמונים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800;900&display=swap">
+<style>
+/* Layout: sticky navy header with the campaign slogan, then a single phone-first column of
+   summary → alerts → filterable community cards; a community opens as its own view. */
+:root {
+  --navy: #1b2350;
+  --navy-ink: #ffffff;
+  --red: #e3262d;
+  --red-ink: #ffffff;
+  --bg: #f3f4f8;
+  --surface: #ffffff;
+  --surface-2: #eceef5;
+  --border: #d9dceb;
+  --text: #141831;
+  --muted: #586079;
+  --brand: #1b2350;
+  --brand-soft: #e6e9f4;
+  --ok: #157347;
+  --ok-soft: #e1f3e9;
+  --warn: #9a5a00;
+  --warn-soft: #fcefd9;
+  --danger: #c4161c;
+  --danger-soft: #fde6e6;
+  --call: #157347;
+  --font: "Heebo", "Arial Hebrew", Arial, sans-serif;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgb(20 24 49 / 7%), 0 2px 6px rgb(20 24 49 / 6%);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1122; --surface: #171b33; --surface-2: #20253f; --border: #2e3456;
+    --text: #e9ebf5; --muted: #a2a8c3; --brand: #a9b5f0; --brand-soft: #232a4d;
+    --ok: #4cc58a; --ok-soft: #133022; --warn: #f0a742; --warn-soft: #34260f;
+    --danger: #ff6b70; --danger-soft: #3b1618; --call: #1f8f59;
+    --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1122; --surface: #171b33; --surface-2: #20253f; --border: #2e3456;
+  --text: #e9ebf5; --muted: #a2a8c3; --brand: #a9b5f0; --brand-soft: #232a4d;
+  --ok: #4cc58a; --ok-soft: #133022; --warn: #f0a742; --warn-soft: #34260f;
+  --danger: #ff6b70; --danger-soft: #3b1618; --call: #1f8f59;
+  --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+  color-scheme: dark;
+}
+:root.big-text { font-size: 115%; }
+:root.hi-contrast {
+  --bg: #000; --surface: #000; --surface-2: #111; --border: #fff; --text: #fff; --muted: #fff;
+  --brand: #ffe14d; --brand-soft: #222; --ok: #7cfc00; --danger: #ff8080; --warn: #ffc04d;
+  --ok-soft: #000; --danger-soft: #000; --warn-soft: #000;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; direction: rtl;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--navy); }
+a { color: var(--brand); }
+:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 6px; }
+button { font: inherit; color: inherit; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; top: -80px; inset-inline-start: 12px; z-index: 50; background: var(--navy); color: var(--navy-ink); padding: 8px 14px; border-radius: 8px; }
+.skip:focus { top: 12px; }
+
+/* header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--navy); color: var(--navy-ink); border-bottom: 4px solid var(--red); }
+.top .wrap { display: flex; align-items: center; gap: 10px; min-height: 58px; padding-block: 6px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand svg { width: 36px; height: 36px; flex: none; }
+.brand-name { font-weight: 900; font-size: 1.15rem; line-height: 1.1; }
+.brand-org { font-size: .72rem; opacity: .8; }
+.grow { flex: 1; }
+.slogan { display: inline-flex; align-items: center; gap: .35em; font-weight: 900; line-height: 1; white-space: nowrap; font-size: 1rem; }
+.slogan b { background: var(--red); color: var(--red-ink); padding: .2em .45em .14em; transform: skewX(-7deg); display: inline-block; }
+@media (max-width: 520px) { .brand-org { display: none; } }
+@media (max-width: 360px) { .slogan { font-size: .85rem; } }
+
+main { padding-block: 14px 90px; display: grid; gap: 18px; }
+h1, h2, h3 { margin: 0; line-height: 1.2; text-wrap: balance; }
+h1 { font-size: 1.4rem; font-weight: 900; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+h3 { font-size: .98rem; font-weight: 800; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: .82rem; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.between { justify-content: space-between; }
+.num { font-variant-numeric: tabular-nums; }
+
+.live { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.dot.stale { background: var(--warn); }
+@media (prefers-reduced-motion: no-preference) { .dot:not(.stale) { animation: pulse 2s infinite; } }
+@keyframes pulse { 50% { opacity: .35; } }
+.btn-ghost { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; font-size: .8rem; cursor: pointer; min-height: 32px; }
+
+.notice { border-radius: 12px; padding: 12px 14px; border: 1px solid; font-weight: 600; display: grid; gap: 6px; }
+.notice.err { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
+.notice.info { background: var(--brand-soft); color: var(--text); border-color: var(--border); }
+.notice button { justify-self: start; }
+
+/* KPIs */
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 760px) { .kpis { grid-template-columns: 1.6fr repeat(5, minmax(0, 1fr)); } }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); min-width: 0; }
+.kpi .l { font-size: .8rem; color: var(--muted); font-weight: 600; }
+.kpi .v { font-size: 1.6rem; font-weight: 900; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.kpi .v small { font-size: .9rem; color: var(--muted); font-weight: 700; }
+.kpi .s { font-size: .74rem; color: var(--muted); }
+.kpi.main { grid-column: 1 / -1; background: var(--navy); color: var(--navy-ink); border-color: var(--navy); border-bottom: 4px solid var(--red); display: grid; grid-template-columns: 1fr auto; align-items: center; }
+@media (min-width: 760px) { .kpi.main { grid-column: auto; } }
+.kpi.main .l, .kpi.main .s { color: inherit; opacity: .85; }
+.kpi.main .v { font-size: 2.6rem; grid-row: span 2; grid-column: 2; }
+.kpi.full { grid-column: 1 / -1; }
+@media (min-width: 760px) { .kpi.full { grid-column: auto; } }
+.kpi.skeleton .v { color: transparent; background: var(--surface-2); border-radius: 6px; }
+
+/* alerts */
+.alerts { display: grid; gap: 10px; }
+@media (min-width: 760px) { .alerts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.alert { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; border-inline-start: 5px solid var(--brand); min-width: 0; }
+.alert.a-danger { border-inline-start-color: var(--danger); }
+.alert.a-warn { border-inline-start-color: var(--warn); }
+.alert ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.alert li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.alert li:last-child { border-bottom: 0; }
+.alert .who { flex: 1; min-width: 0; background: none; border: 0; padding: 0; text-align: start; cursor: pointer; }
+.alert .who b { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
+.alert .count { margin-inline-start: auto; font-size: .8rem; color: var(--muted); font-weight: 700; }
+.see-all { margin-top: 8px; background: none; border: 0; padding: 6px 0; color: var(--brand); font-weight: 800; cursor: pointer; min-height: 40px; }
+
+/* groups */
+.groups { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; display: grid; gap: 10px; }
+.grow-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+.grow-row .bar { grid-column: 1 / -1; }
+.bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 999px; background: var(--brand); }
+.bar i.s-done { background: var(--ok); }
+.bar i.s-low, .bar i.s-notStarted { background: var(--danger); }
+
+/* filter bar */
+.filters { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 62px); z-index: 15; background: var(--bg); margin-inline: -16px; padding: 10px 16px 6px; border-bottom: 1px solid var(--border); display: grid; gap: 8px; }
+.filters .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.filters input, .filters select { width: 100%; min-height: 44px; font: inherit; font-size: 16px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 12px; }
+.filters input { grid-column: 1 / -1; }
+@media (min-width: 760px) { .filters .inputs { grid-template-columns: 2fr 1fr; } .filters input { grid-column: auto; } }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-weight: 800; font-size: .86rem; cursor: pointer; white-space: nowrap; }
+.chip span { display: inline-block; min-width: 1.6em; margin-inline-start: 4px; border-radius: 999px; background: var(--surface-2); font-size: .78rem; padding: 0 5px; }
+.chip[aria-pressed="true"] { background: var(--navy); color: var(--navy-ink); border-color: var(--navy); }
+.chip[aria-pressed="true"] span { background: rgb(255 255 255 / 20%); }
+.chip.c-notStarted { border-color: var(--danger); }
+.chip.c-notStarted[aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: #fff; }
+.chip.c-low { border-color: var(--warn); }
+.chip.c-low[aria-pressed="true"] { background: var(--warn); border-color: var(--warn); color: #fff; }
+.count-line { font-size: .78rem; color: var(--muted); }
+
+/* community cards */
+.cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+@media (min-width: 760px) { .cards { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); } }
+.card { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; border-inline-start: 5px solid var(--brand); min-width: 0; }
+.card.s-notStarted { border-inline-start-color: var(--danger); }
+.card.s-low { border-inline-start-color: var(--warn); }
+.card.s-done { border-inline-start-color: var(--ok); }
+.card .main-btn { flex: 1; min-width: 0; display: grid; gap: 5px; padding: 12px; background: none; border: 0; text-align: start; cursor: pointer; }
+.card .main-btn:active { background: var(--surface-2); }
+.card .top-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.card .name { font-weight: 800; font-size: 1.04rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .pct { font-weight: 900; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.s-notStarted .pct, .s-low .pct { color: var(--danger); }
+.s-done .pct { color: var(--ok); }
+.card .nums { font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card .nums b { color: var(--text); }
+.card .rep { font-size: .8rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.no-rep { color: var(--danger); font-weight: 700; }
+.card .side { display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 8px; background: var(--surface-2); border-inline-start: 1px solid var(--border); }
+
+.call { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 52px; min-height: 48px; padding: 0 12px; border-radius: 12px; background: var(--call); color: #fff; text-decoration: none; font-weight: 800; border: 0; }
+.call svg, .icon-btn svg { width: 22px; height: 22px; flex: none; }
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none; cursor: pointer; }
+
+/* badges */
+.badge { display: inline-block; font-size: .72rem; font-weight: 800; padding: 1px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+.b-done { background: var(--ok-soft); color: var(--ok); }
+.b-notStarted { background: var(--danger-soft); color: var(--danger); }
+.b-low { background: var(--warn-soft); color: var(--warn); }
+.b-progress { background: var(--brand-soft); color: var(--brand); }
+.b-empty { background: var(--surface-2); color: var(--muted); }
+
+/* detail view */
+.back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--brand); font-weight: 800; cursor: pointer; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; display: grid; gap: 12px; min-width: 0; }
+.detail-grid { display: grid; gap: 12px; }
+@media (min-width: 860px) { .detail-grid { grid-template-columns: 1fr 1.6fr; align-items: start; } }
+.person + .person { border-top: 1px solid var(--border); padding-top: 12px; }
+.person { display: grid; gap: 8px; }
+.person .pname { font-weight: 800; font-size: 1.08rem; }
+.phone-line { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+.phone-line .call { justify-content: center; }
+.phone-num { font-size: 1.1rem; font-weight: 800; direction: ltr; text-align: end; user-select: all; }
+.mail { word-break: break-all; }
+.bignum { display: flex; align-items: baseline; gap: 10px; }
+.bignum .v { font-size: 2.4rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.tile { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+.tile .v { font-weight: 900; font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.shifts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.shift { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; display: grid; gap: 2px; }
+.shift .t { display: flex; justify-content: space-between; gap: 8px; font-weight: 800; }
+.shift .hours { direction: ltr; unicode-bidi: isolate; }
+
+footer { border-top: 1px solid var(--border); padding-block: 18px 100px; color: var(--muted); font-size: .82rem; }
+footer details { margin-top: 8px; }
+footer summary { cursor: pointer; font-weight: 700; color: var(--text); min-height: 32px; }
+footer ul { padding-inline-start: 18px; margin: 6px 0; }
+
+.a11y-btn { position: fixed; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); inset-inline-start: calc(14px + env(safe-area-inset-right, 0px)); z-index: 25; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--navy); color: #fff; box-shadow: 0 4px 14px rgb(0 0 0 / 25%); cursor: pointer; display: grid; place-items: center; }
+.a11y-btn svg { width: 26px; height: 26px; }
+.a11y-panel { position: fixed; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); inset-inline-start: calc(14px + env(safe-area-inset-right, 0px)); z-index: 25; width: min(280px, calc(100vw - 28px)); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 10px 30px rgb(0 0 0 / 25%); padding: 12px; display: grid; gap: 6px; }
+.a11y-panel button { display: flex; justify-content: space-between; min-height: 44px; align-items: center; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; font-weight: 600; }
+.a11y-panel button[aria-pressed="true"] { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.toast { position: fixed; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 700; z-index: 40; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+.lock { max-width: 420px; margin: 8vh auto 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 20px; display: grid; gap: 14px; text-align: center; }
+.lock .slogan { justify-content: center; font-size: 1.5rem; flex-direction: column; gap: .25em; }
+.lock .slogan span { color: var(--text); }
+.lock input[type=password] { width: 100%; min-height: 50px; font: inherit; font-size: 18px; text-align: center; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 0 12px; }
+.lock label.remember { display: flex; gap: 8px; align-items: center; justify-content: center; font-size: .9rem; min-height: 44px; }
+.lock label.remember input { width: 20px; height: 20px; }
+.primary { min-height: 50px; border: 0; border-radius: 12px; background: var(--navy); color: var(--navy-ink); font-weight: 800; font-size: 1.05rem; cursor: pointer; }
+.lock .err { color: var(--danger); font-weight: 700; }
+.logout { background: none; border: 1px solid rgb(255 255 255 / 50%); color: inherit; border-radius: 999px; padding: 2px 10px; font-size: .75rem; cursor: pointer; min-height: 30px; margin-inline-start: 8px; }
+
+body { margin: 0; }
+.wa { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 52px; min-height: 48px; padding: 0 12px; border-radius: 12px; background: #25d366; color: #0b2e17; text-decoration: none; font-weight: 800; }
+.wa svg { width: 24px; height: 24px; flex: none; }
+.card .side { flex-direction: column; }
+.alert .btns { display: inline-flex; gap: 6px; flex: none; }
+.alert .btns .call, .alert .btns .wa { min-width: 44px; min-height: 44px; padding: 0 8px; }
+.big-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.big-actions:has(> :only-child) { grid-template-columns: 1fr; }
+.big-actions .call, .big-actions .wa { min-height: 52px; font-size: 1.02rem; }
+.phone-line { grid-template-columns: 1fr auto; }
+.refresh { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--navy); color: var(--navy-ink); font-weight: 800; cursor: pointer; }
+:root.hi-contrast .refresh { border: 1px solid #fff; }
+.refresh svg { width: 18px; height: 18px; }
+@media (prefers-reduced-motion: no-preference) { .refresh[aria-busy="true"] svg { animation: spin 1s linear infinite; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.ok-msg { color: var(--ok); font-weight: 700; }
+.brand-name { white-space: nowrap; }
+@media (max-width: 520px) {
+  .top .wrap { flex-wrap: wrap; row-gap: 4px; padding-block: 6px 8px; }
+  .top .slogan { order: 3; flex-basis: 100%; justify-content: center; font-size: .95rem; }
+  .filters { top: calc(env(safe-area-inset-top, 0px) + 92px); }
+  .kpis > .kpi:last-child:nth-child(even) { grid-column: 1 / -1; }
+}
+.lock input.code-input { font-size: 28px; letter-spacing: .4em; direction: ltr; font-variant-numeric: tabular-nums; }
+.lock input[type=email] { width: 100%; min-height: 50px; font: inherit; font-size: 18px; text-align: center; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 0 12px; }
+.lock .code-input { width: 100%; min-height: 56px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+.linklike { background: none; border: 0; color: var(--brand); font-weight: 700; cursor: pointer; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
+.tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); }
+.tabs button { min-height: 44px; padding: 0 16px; border: 0; background: none; font-weight: 800; color: var(--muted); border-bottom: 3px solid transparent; cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--red); }
+.tabs button span { background: var(--red); color: #fff; border-radius: 999px; padding: 0 7px; font-size: .75rem; }
+.tabs button span:empty { display: none; }
+.admin-stack { display: grid; gap: 12px; }
+.add-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.add-row input { flex: 1 1 220px; min-height: 48px; font: inherit; font-size: 16px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 0 12px; }
+.add-row .primary { padding: 0 20px; }
+.user-list, .comm-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.user-list li, .comm-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.user-list li:last-child, .comm-list li:last-child { border-bottom: 0; }
+.comm-list { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 4px 14px; }
+.comm-list li.off .switch span { color: var(--muted); text-decoration: line-through; }
+.switch { display: flex; align-items: center; gap: 10px; flex: 1 1 160px; font-weight: 800; min-height: 44px; cursor: pointer; }
+.switch input { width: 22px; height: 22px; accent-color: var(--navy); }
+.admin-search { width: 100%; min-height: 46px; font: inherit; font-size: 16px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 12px; }
+.btn-ghost.go { background: var(--ok); color: #fff; border-color: var(--ok); }
+.btn-ghost.danger { color: var(--danger); border-color: var(--danger); }
+.btn-ghost { min-height: 40px; color: var(--text); }
+.person-edit { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px 12px; display: grid; gap: 8px; margin: 0; }
+.person-edit legend { font-weight: 800; padding: 0 6px; }
+.person-edit label { display: grid; gap: 4px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+.person-edit input { min-height: 46px; font: inherit; font-size: 16px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 0 10px; }
+.person-edit .danger { justify-self: start; }
+</style>
+
+</head>
+<body>
+<a class="skip" href="#app">דלג לתוכן</a>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-4 32 32)"><rect x="12" y="4" width="40" height="56" rx="3" fill="#fff"/><text x="32" y="40" text-anchor="middle" font-family="Heebo, Arial" font-weight="900" font-size="34" fill="#000">ג</text><rect x="19" y="48" width="26" height="2.5" rx="1" fill="#000"/><rect x="22" y="53" width="20" height="2.5" rx="1" fill="#000"/></g></svg>
+      <div><div class="brand-name">מרוץ האיוש</div><div class="brand-org">שלומי אמונים – מחזיקי הדת</div></div>
+    </div>
+    <span class="grow"></span>
+    <span class="slogan" aria-label="הזכות להיות חרדי!"><b>הזכות</b> להיות חרדי!</span><button class="logout" id="adminBtn" hidden>ניהול</button><button class="logout" id="logout" hidden>יציאה</button>
+  </div>
+</header>
+
+<main id="app" class="wrap" tabindex="-1"></main>
+
+<footer>
+  <div class="wrap">
+    <p>מערכת פנימית של מטה איוש הקלפיות. הנתונים נקראים ישירות מקבצי השיבוץ בגוגל דרייב ומתעדכנים כל 15 שניות. הכניסה למיילים מאושרים בלבד, עם קוד חד־פעמי.</p>
+    <details>
+      <summary>הצהרת נגישות</summary>
+      <p>הדף הותאם לתקן הישראלי ת״י 5568 ברמה AA (WCAG 2.0): ניווט מלא במקלדת, כיווניות מימין לשמאל, תיאורים לקוראי מסך, ניגודיות צבעים, התאמה מלאה לנייד, ותפריט נגישות (הכפתור העגול) להגדלת טקסט וניגודיות גבוהה.</p>
+      <p>נתקלתם בבעיה? כתבו אלינו: <a href="mailto:7538995@gmail.com">7538995@gmail.com</a></p>
+    </details>
+    <details>
+      <summary>פרטיות ועוגיות</summary>
+      <ul>
+        <li>הדף לא מציב עוגיות ולא משתמש בכלי מעקב, פרסום או סטטיסטיקה.</li>
+        <li>פרטי הנציגים מוצגים לצורך תיאום האיוש בלבד. שמות המתנדבים שאיישו משמרות לא מוצגים.</li>
+        <li>הגדרות הנגישות ואסימון הכניסה נשמרים רק בדפדפן שלכם. כתובות המייל המורשות נשמרות אצל מנהל המטה בלבד.</li>
+        <li>לעיון, תיקון או מחיקה של פרטים: <a href="mailto:7538995@gmail.com">7538995@gmail.com</a></li>
+      </ul>
+    </details>
+  </div>
+</footer>
+
+<button class="a11y-btn" id="a11yBtn" aria-expanded="false" aria-controls="a11yPanel" aria-label="תפריט נגישות">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="4" r="2"/><path d="M5 8h14M12 8v6m0 0-3 7m3-7 3 7"/></svg>
+</button>
+<div class="a11y-panel" id="a11yPanel" role="dialog" aria-label="הגדרות נגישות" hidden>
+  <button type="button" id="optBig" aria-pressed="false">הגדלת טקסט</button>
+  <button type="button" id="optContrast" aria-pressed="false">ניגודיות גבוהה</button>
+</div>
+
+<script>
+"use strict";
+// כתובת "צינור הנתונים" (Google Apps Script) – הפריסה מהדרייב של המטה
+const API_URL = "https://script.google.com/macros/s/AKfycbxpSjd2G8A-2qfslMuR0rSOLOgE65Ba5efHbKoXlrS1acX7ty3BTZgdtOHXUB0wx9fR/exec";
+const REFRESH_MS = 15000;
+const LOW = 0.3;
+const ELECTION_DATE = "2026-10-27";
+const TOKEN_KEY = "kalpi-token";
+
+// ─── helpers ───────────────────────────────────────────────────
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pctText = (p) => (p === null ? "—" : Math.round(p * 100) + "%");
+function toE164(raw) {
+  let d = String(raw).replace(/[^\d+]/g, "");
+  if (!d) return null;
+  if (d.startsWith("+")) d = d.slice(1); else if (d.startsWith("00")) d = d.slice(2); else if (d.startsWith("0")) d = "972" + d.slice(1);
+  return d.length >= 11 && d.length <= 15 ? d : null;
+}
+function prettyPhone(raw) {
+  const e = toE164(raw); if (!e || !e.startsWith("972")) return raw;
+  const l = "0" + e.slice(3);
+  return l.length === 10 ? `${l.slice(0, 3)}-${l.slice(3, 6)}-${l.slice(6)}` : l.length === 9 ? `${l.slice(0, 2)}-${l.slice(2, 5)}-${l.slice(5)}` : l;
+}
+function statusOf(c) {
+  if (c.to <= 0) return "empty";
+  if (c.st >= c.to) return "done";
+  if (c.st === 0 && !c.obsSt) return "notStarted";
+  if (c.st / c.to < LOW) return "low";
+  return "progress";
+}
+function daysToElection() {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
+  return Math.round((Date.parse(ELECTION_DATE) - Date.parse(today)) / 86400000);
+}
+const fmtDate = (iso) => (iso ? new Intl.DateTimeFormat("he-IL", { timeZone: "Asia/Jerusalem", dateStyle: "short", timeStyle: "short" }).format(new Date(iso)) : "");
+const STATUS_LABEL = { done: "הושלם", notStarted: "לא התחיל", low: "נמוך", progress: "בתהליך", empty: "אין משמרות" };
+const ICON_PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>';
+const ICON_WA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.7-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3Z"/></svg>';
+const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+const ICON_REFRESH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>';
+
+const store = {
+  get() { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } },
+  set(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch {} },
+  clear() { try { localStorage.removeItem(TOKEN_KEY); } catch {} },
+};
+
+// ─── server ────────────────────────────────────────────────────
+async function api(action, payload = {}) {
+  let res;
+  try {
+    // text/plain keeps this a "simple" request, so no CORS preflight is needed
+    res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action, token: S.token, ...payload }), headers: { "Content-Type": "text/plain;charset=utf-8" }, cache: "no-store", redirect: "follow" });
+  } catch { throw new Error("NET"); }
+  if (!res.ok) throw new Error("NET");
+  const out = await res.json().catch(() => ({ ok: false, error: "NET" }));
+  if (!out.ok) {
+    if (out.error === "NO_SESSION" && action !== "verify") { signOut("פג תוקף הכניסה, או שהגישה שלך הוסרה. היכנסו שוב."); }
+    throw new Error(out.error || "NET");
+  }
+  return out;
+}
+const ERR = {
+  NET: "אין חיבור לשרת. בדקו את האינטרנט ונסו שוב.",
+  BAD_EMAIL: "כתובת המייל לא תקינה.",
+  WAIT: "קוד נשלח לפני רגע. בדקו את תיבת המייל (גם בספאם).",
+  BAD_CODE: "הקוד שגוי. נסו שוב.",
+  CODE_EXPIRED: "הקוד פג תוקף. בקשו קוד חדש.",
+  FORBIDDEN: "הפעולה מותרת למנהלים בלבד.",
+  LAYOUT: "מבנה קובץ הדשבורד השתנה ולא ניתן לקרוא אותו.",
+  SERVER: "תקלה בשרת. נסו שוב בעוד רגע.",
+};
+const errText = (e) => ERR[e?.message] || ERR.SERVER;
+
+// ─── state ─────────────────────────────────────────────────────
+const S = { token: null, email: "", isAdmin: false, data: null, list: [], view: null, q: "", chip: "", sort: "pct", loading: false, error: null, receivedAt: 0,
+  login: { step: "email", email: "" }, admin: { tab: "users", users: null, comms: null, cq: "", edit: null, busy: false, msg: "" } };
+const app = document.getElementById("app");
+const adminBtn = document.getElementById("adminBtn"), logoutBtn = document.getElementById("logout");
+
+async function refresh(manual) {
+  if (!S.token || S.loading) return;
+  S.loading = true; updateLive();
+  try {
+    const out = await api("data");
+    S.data = out.data; S.isAdmin = out.isAdmin; S.email = out.email; S.error = null; S.receivedAt = Date.now();
+    S.list = out.data.communities.map((c) => ({ ...c, rem: Math.max(0, c.to - c.st), pct: c.to > 0 ? Math.min(1, c.st / c.to) : null, status: statusOf(c) }));
+    adminBtn.hidden = !S.isAdmin;
+    S.loading = false;
+    if (S.view !== "__admin") render(); // never wipe an admin form mid-edit
+    if (manual) toast("הנתונים עודכנו");
+  } catch (e) {
+    S.loading = false;
+    if (!S.token) return;
+    S.error = e.message === "LAYOUT" ? "layout" : "net";
+    updateLive(); if (!S.data) render();
+  }
+}
+
+function signOut(message) {
+  if (S.token) api("logout").catch(() => {});
+  store.clear();
+  Object.assign(S, { token: null, data: null, view: null, isAdmin: false, login: { step: "email", email: S.login.email } });
+  adminBtn.hidden = true; logoutBtn.hidden = true;
+  renderLogin(message);
+}
+
+// ─── login: email → one-time code ─────────────────────────────
+function renderLogin(msg, isError = true) {
+  const L = S.login;
+  const intro = `<span class="slogan"><b>הזכות</b> <span>להיות חרדי!</span></span><h1>מרוץ האיוש · שלומי אמונים</h1>`;
+  const note = msg ? `<p class="${isError ? "err" : "ok-msg"}" role="${isError ? "alert" : "status"}">${esc(msg)}</p>` : "";
+  if (L.step === "pending") {
+    app.innerHTML = `<div class="lock">${intro}<p>הבקשה שלך נשלחה למנהל המטה.</p><p class="muted">כשהגישה תאושר תקבלו מייל ל-<b dir="ltr">${esc(L.email)}</b>, ואז אפשר להיכנס.</p><button class="primary" data-act="restart">חזרה</button></div>`;
+    return;
+  }
+  if (L.step === "code") {
+    app.innerHTML = `<form class="lock" id="codeForm" novalidate>${intro}
+      <p>שלחנו קוד בן 6 ספרות ל-<b dir="ltr">${esc(L.email)}</b></p>
+      <label class="sr-only" for="code">קוד כניסה</label>
+      <input id="code" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="------" required>
+      ${note}
+      <button class="primary" type="submit">כניסה</button>
+      <button class="linklike" type="button" data-act="restart">החלפת מייל או שליחה מחדש</button>
+    </form>`;
+    document.getElementById("code").focus();
+    return;
+  }
+  app.innerHTML = `<form class="lock" id="emailForm" novalidate>${intro}
+    <p class="muted">הכניסה למורשים בלבד. הקלידו את כתובת המייל שלכם, ונשלח אליה קוד כניסה.</p>
+    <label class="sr-only" for="email">כתובת מייל</label>
+    <input id="email" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@example.com" value="${esc(L.email)}" required>
+    ${note}
+    <button class="primary" type="submit">שליחת קוד</button>
+  </form>`;
+  document.getElementById("email").focus();
+}
+app.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target, btn = form.querySelector("button[type=submit]");
+  if (form.id === "emailForm") {
+    const email = document.getElementById("email").value.trim();
+    S.login.email = email;
+    if (!email) return renderLogin("יש להקליד כתובת מייל.");
+    btn.disabled = true; btn.textContent = "שולח…";
+    try {
+      const out = await api("requestCode", { email });
+      S.login.step = out.pending ? "pending" : "code";
+      renderLogin();
+    } catch (err) {
+      if (err.message === "WAIT") { S.login.step = "code"; return renderLogin(ERR.WAIT, false); }
+      renderLogin(errText(err));
+    }
+  } else if (form.id === "codeForm") {
+    const code = document.getElementById("code").value.replace(/\D/g, "");
+    if (code.length !== 6) return renderLogin("הקוד צריך להיות 6 ספרות.");
+    btn.disabled = true; btn.textContent = "בודק…";
+    try {
+      const out = await api("verify", { email: S.login.email, code });
+      S.token = out.token; S.isAdmin = out.isAdmin; S.email = out.email; store.set(out.token);
+      logoutBtn.hidden = false; adminBtn.hidden = !S.isAdmin;
+      app.innerHTML = `<p class="muted">טוען נתונים…</p>`;
+      refresh();
+    } catch (err) {
+      if (err.message === "CODE_EXPIRED") S.login.step = "email";
+      renderLogin(errText(err));
+    }
+  } else if (form.id === "addUserForm") {
+    const email = document.getElementById("newUser").value.trim();
+    if (email) adminAction("setUser", { email, status: "approved" }, (out) => { S.admin.users = out.users; }, "המשתמש אושר ונשלח אליו מייל.");
+  } else if (form.id === "editForm") {
+    saveContacts(form);
+  }
+});
+logoutBtn.addEventListener("click", () => signOut());
+adminBtn.addEventListener("click", () => { S.view = S.view === "__admin" ? null : "__admin"; if (S.view) loadAdmin(); render(); window.scrollTo(0, 0); });
+
+// ─── main views ────────────────────────────────────────────────
+function reminderText(c, person) {
+  const hi = person?.name ? `שלום ${person.name},` : "שלום,";
+  return `${hi}\nמטה האיוש – שלומי אמונים: בקהילת ${c.name} אוישו עד עכשיו ${c.st} מתוך ${c.to} משמרות (נותרו ${c.rem}).\nנשמח לעזרתך להשלים את האיוש לפני יום הבחירות (27.10). תודה רבה!`;
+}
+function contactButtons(person, c, { phone, labels = false, remind = false, call = true } = {}) {
+  const ph = phone ?? person?.phones?.[0];
+  const e = ph ? toE164(ph) : null;
+  if (!e) return "";
+  const who = esc(person.name || "נציג " + c.name);
+  const callBtn = call ? `<a class="call" href="tel:+${e}" aria-label="חיוג אל ${who}, ${esc(prettyPhone(ph))}">${ICON_PHONE}${labels ? "<span>חיוג</span>" : ""}</a>` : "";
+  const waUrl = `https://wa.me/${e}` + (remind ? `?text=${encodeURIComponent(reminderText(c, person))}` : "");
+  const wa = e.startsWith("9725") ? `<a class="wa" href="${waUrl}" target="_blank" rel="noopener noreferrer" aria-label="${remind ? "תזכורת בוואטסאפ" : "וואטסאפ"} אל ${who}">${ICON_WA}${labels ? `<span>${remind ? "תזכורת" : "וואטסאפ"}</span>` : ""}</a>` : "";
+  return callBtn + wa;
+}
+
+function liveHtml() {
+  if (!S.receivedAt) return "";
+  const secs = Math.max(0, Math.round((Date.now() - S.receivedAt) / 1000));
+  const ago = secs < 5 ? "עכשיו" : secs < 60 ? `לפני ${secs} שנ׳` : `לפני ${Math.round(secs / 60)} דק׳`;
+  const stale = S.error || secs > 60;
+  const msg = S.error === "net" ? "אין חיבור – מנסה שוב" : S.error === "layout" ? "מבנה הדשבורד השתנה" : `מתעדכן כל 15 שנ׳ · עודכן ${ago}`;
+  return `<span class="live" role="status"><span class="dot${stale ? " stale" : ""}"></span>${msg}${S.data?.updated ? ` · בדשבורד ${esc(S.data.updated)}` : ""}</span>
+    <button class="refresh" data-act="refresh" aria-label="רענון הנתונים עכשיו"${S.loading ? ' aria-busy="true"' : ""}>${ICON_REFRESH}<span>רענון</span></button>`;
+}
+function updateLive() { const el = document.getElementById("liveBox"); if (el) el.innerHTML = liveHtml(); }
+
+function renderHome() {
+  const cs = S.list, out = [];
+  out.push(`<div class="row between"><div><h1>שלומי אמונים – מחזיקי הדת</h1><p class="muted small">מצב איוש הקלפיות לפי קהילה · בחירות לכנסת ה־26</p></div><div class="row" id="liveBox">${liveHtml()}</div></div>`);
+  const sum = (f) => cs.reduce((a, c) => a + f(c), 0);
+  const to = sum((c) => c.to), st = sum((c) => c.st), obsTo = sum((c) => c.obsTo), obsSt = sum((c) => c.obsSt);
+  const done = cs.filter((c) => c.status === "done").length, started = cs.filter((c) => c.st > 0).length;
+  const days = daysToElection();
+  out.push(`<section class="kpis" aria-label="סיכום הגוש">
+    <div class="kpi main"><div class="l">אחוז איוש בגוש</div><div class="v">${pctText(to ? st / to : null)}</div><div class="s num">${st} מתוך ${to} משמרות</div></div>
+    <div class="kpi"><div class="l">נותרו לאיוש</div><div class="v">${Math.max(0, to - st)}</div><div class="s">משמרות פתוחות</div></div>
+    <div class="kpi"><div class="l">משקיפים</div><div class="v">${obsSt}<small> / ${obsTo}</small></div><div class="s">אוישו מתוך הנדרש</div></div>
+    <div class="kpi"><div class="l">קהילות בתנועה</div><div class="v">${started}<small> / ${cs.length}</small></div><div class="s">כבר אוישה משמרת</div></div>
+    <div class="kpi"><div class="l">קהילות שסיימו</div><div class="v">${done}<small> / ${cs.length}</small></div><div class="s">100% איוש</div></div>
+    <div class="kpi"><div class="l">ימים לבחירות</div><div class="v">${days > 0 ? days : days === 0 ? "היום" : "—"}</div><div class="s">27.10.2026</div></div>
+  </section>`);
+
+  const notStarted = cs.filter((c) => c.status === "notStarted").sort((a, b) => b.to - a.to);
+  const lowest = cs.filter((c) => c.status === "low" || c.status === "progress").sort((a, b) => a.pct - b.pct || b.rem - a.rem);
+  const noRep = cs.filter((c) => !c.people.length && c.status !== "done").sort((a, b) => b.rem - a.rem);
+  const alert = (tone, title, items, detail, chip) => `<div class="alert a-${tone}">
+    <div class="row"><h3>${title}</h3><span class="count">${items.length} קהילות</span></div>
+    ${items.length ? `<ul>${items.slice(0, 3).map((c) => `<li><button class="who" data-open="${esc(c.key)}"><b>${esc(c.name)}</b> <span class="muted small">· ${esc(detail(c))}</span></button><span class="btns">${tone !== "info" ? contactButtons(c.people[0], c, { remind: true }) : ""}</span></li>`).join("")}</ul>` : `<p class="muted small" style="margin-top:6px">אין קהילות ברשימה הזו.</p>`}
+    ${items.length > 3 ? `<button class="see-all" data-chip="${chip}">הצגת כל ${items.length} ←</button>` : ""}
+  </div>`;
+  out.push(`<section aria-labelledby="al-h" style="display:grid;gap:10px"><h2 id="al-h">התראות</h2><div class="alerts">
+    ${alert("danger", "עדיין לא התחילו", notStarted, (c) => `0 / ${c.to}`, "notStarted")}
+    ${alert("warn", "האחוזים הנמוכים ביותר", lowest, (c) => `${pctText(c.pct)} · נותרו ${c.rem}`, "low")}
+    ${alert("info", "חסר איש קשר", noRep, (c) => `נותרו ${c.rem}`, "noRep")}
+  </div><p class="small muted">כפתור הוואטסאפ בהתראות פותח הודעת תזכורת מוכנה לנציג.</p></section>`);
+
+  const chips = [["", "הכל"], ["notStarted", "לא התחילו"], ["low", "נמוך"], ["progress", "בתהליך"], ["done", "הושלם"], ["noRep", "בלי איש קשר"]];
+  const match = (c, k) => !k || (k === "noRep" ? !c.people.length : c.status === k);
+  const needle = S.q.trim();
+  const rows = cs.filter((c) => (!needle || c.name.includes(needle) || c.people.some((p) => p.name.includes(needle))) && match(c, S.chip));
+  rows.sort((a, b) => S.sort === "name" ? a.name.localeCompare(b.name, "he") : S.sort === "rem" ? b.rem - a.rem : S.sort === "pctDesc" ? (b.pct ?? -1) - (a.pct ?? -1) : (a.pct ?? 2) - (b.pct ?? 2) || b.rem - a.rem);
+  out.push(`<section aria-labelledby="list-h" style="display:grid;gap:10px" id="all">
+    <h2 id="list-h">כל קהילות הגוש</h2>
+    <div class="filters">
+      <div class="inputs" role="search">
+        <label class="sr-only" for="q">חיפוש קהילה או נציג</label>
+        <input id="q" type="search" placeholder="חיפוש קהילה או נציג" value="${esc(S.q)}" enterkeyhint="search" autocomplete="off">
+        <label class="sr-only" for="sort">מיון</label>
+        <select id="sort">
+          <option value="pct" ${S.sort === "pct" ? "selected" : ""}>אחוז נמוך קודם</option>
+          <option value="pctDesc" ${S.sort === "pctDesc" ? "selected" : ""}>אחוז גבוה קודם</option>
+          <option value="rem" ${S.sort === "rem" ? "selected" : ""}>הכי הרבה נותרו</option>
+          <option value="name" ${S.sort === "name" ? "selected" : ""}>לפי שם</option>
+        </select>
+      </div>
+      <div class="chips" role="group" aria-label="סינון לפי מצב">${chips.map(([k, l]) => {
+        const n = cs.filter((c) => match(c, k)).length;
+        return k && !n ? "" : `<button class="chip c-${k || "all"}" data-chip="${k}" aria-pressed="${S.chip === k}">${l}<span>${n}</span></button>`;
+      }).join("")}</div>
+      <div class="count-line" aria-live="polite">${rows.length} מתוך ${cs.length} קהילות</div>
+    </div>
+    <ul class="cards">${rows.map((c) => `<li class="card s-${c.status}">
+      <button class="main-btn" data-open="${esc(c.key)}" aria-label="${esc(c.name)}, ${pctText(c.pct)} איוש, ${STATUS_LABEL[c.status]}">
+        <span class="top-line"><span class="name">${esc(c.name)}</span><span class="pct">${pctText(c.pct)}</span></span>
+        <span class="bar" aria-hidden="true"><i class="s-${c.status}" style="width:${Math.round((c.pct ?? 0) * 100)}%"></i></span>
+        <span class="nums">אוישו ${c.st}/${c.to} · נותרו <b>${c.rem}</b>${c.obsTo ? ` · משקיפים ${c.obsSt}/${c.obsTo}` : ""}</span>
+        <span class="rep">${c.people.length ? esc(c.people.map((p) => p.name).filter(Boolean).join(", ")) : '<span class="no-rep">אין איש קשר</span>'}</span>
+      </button>
+      ${c.people[0]?.phones[0] ? `<span class="side">${contactButtons(c.people[0], c)}</span>` : ""}
+    </li>`).join("") || '<li class="muted">לא נמצאו קהילות התואמות לסינון.</li>'}</ul>
+  </section>`);
+  return out.join("");
+}
+
+function renderDetail() {
+  const c = S.list.find((x) => x.key === S.view);
+  if (!c) { S.view = null; return renderHome(); }
+  const out = [`<button class="back" data-act="back">→ חזרה לכל הקהילות</button>`];
+  out.push(`<div class="row between"><div><h1>${esc(c.name)}</h1><p class="muted small">שלומי אמונים – מחזיקי הדת <span class="badge b-${c.status}">${STATUS_LABEL[c.status]}</span></p></div><div class="row" id="liveBox">${liveHtml()}</div></div>`);
+  const people = c.people.length ? c.people.map((p) => `<div class="person">
+      <div class="pname">${esc(p.name || "—")}</div>
+      ${p.phones.map((ph) => `<div class="phone-line"><span class="phone-num">${esc(prettyPhone(ph))}</span><button class="icon-btn" data-copy="${esc(prettyPhone(ph))}" aria-label="העתקת המספר ${esc(prettyPhone(ph))}">${ICON_COPY}</button></div>
+        <div class="big-actions">${contactButtons(p, c, { phone: ph, labels: true })}</div>
+        ${c.status !== "done" && toE164(ph)?.startsWith("9725") ? `<div class="big-actions">${contactButtons(p, c, { phone: ph, labels: true, remind: true, call: false })}</div>` : ""}`).join("")}
+      ${p.email ? `<a class="mail small" href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : ""}
+    </div>`).join("") : `<p class="no-rep">עדיין לא הוזן איש קשר לקהילה הזו.</p>`;
+  out.push(`<div class="detail-grid">
+    <section class="panel" aria-labelledby="ct-h"><div class="row between"><h2 id="ct-h">${c.people.length > 1 ? "אנשי קשר" : "איש קשר"}</h2>${S.isAdmin ? `<button class="btn-ghost" data-edit="${esc(c.key)}">עריכה</button>` : ""}</div>${people}</section>
+    <section class="panel" aria-labelledby="pr-h"><h2 id="pr-h">התקדמות האיוש</h2>
+      <div class="bignum"><span class="v">${pctText(c.pct)}</span><span class="muted">${c.st} מתוך ${c.to} משמרות</span></div>
+      <div class="bar" role="progressbar" aria-label="אחוז איוש ${esc(c.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((c.pct ?? 0) * 100)}"><i class="s-${c.status}" style="width:${Math.round((c.pct ?? 0) * 100)}%"></i></div>
+      <div class="tiles"><div class="tile"><div class="small muted">נותרו</div><div class="v">${c.rem}</div></div><div class="tile"><div class="small muted">משקיפים</div><div class="v">${c.obsSt} / ${c.obsTo}</div></div></div>
+    </section>
+  </div>`);
+  return out.join("");
+}
+
+// ─── admin ─────────────────────────────────────────────────────
+async function loadAdmin() {
+  const A = S.admin;
+  try {
+    if (A.tab === "users") A.users = (await api("users")).users;
+    else A.comms = (await api("communities")).communities;
+  } catch (e) { A.msg = errText(e); }
+  if (S.view === "__admin") render();
+}
+async function adminAction(action, payload, after, okMsg) {
+  const A = S.admin;
+  A.busy = true; A.msg = ""; render();
+  try { const out = await api(action, payload); after?.(out); A.msg = okMsg || ""; }
+  catch (e) { A.msg = errText(e); }
+  A.busy = false;
+  if (S.view === "__admin") render();
+}
+
+function renderAdmin() {
+  const A = S.admin;
+  const tabs = `<div class="tabs" role="tablist">
+    <button role="tab" aria-selected="${A.tab === "users"}" data-tab="users">משתמשים${A.users ? ` <span>${A.users.filter((u) => u.status === "pending").length || ""}</span>` : ""}</button>
+    <button role="tab" aria-selected="${A.tab === "comms"}" data-tab="comms">קהילות</button>
+  </div>`;
+  const msg = A.msg ? `<p class="${/תקלה|אין|שגוי|מותרת|לא תקינה/.test(A.msg) ? "err" : "ok-msg"}" role="status">${esc(A.msg)}</p>` : "";
+  let body;
+  if (A.tab === "users") body = renderUsers();
+  else body = A.edit ? renderEditor() : renderComms();
+  return `<button class="back" data-act="back">→ חזרה לאתר</button><h1>ניהול</h1>${tabs}${msg}${body}`;
+}
+
+function renderUsers() {
+  const users = S.admin.users;
+  if (!users) return `<p class="muted">טוען…</p>`;
+  const group = (status, title, actions) => {
+    const list = users.filter((u) => u.status === status);
+    if (!list.length && status !== "approved") return "";
+    return `<section class="panel"><h2>${title} <span class="muted small">(${list.length})</span></h2>
+      ${list.length ? `<ul class="user-list">${list.map((u) => `<li><div><b dir="ltr">${esc(u.email)}</b><div class="small muted">${u.lastLogin ? "כניסה אחרונה " + fmtDate(u.lastLogin) : "ביקש/ה " + fmtDate(u.requestedAt)}</div></div><div class="row">${actions(u)}</div></li>`).join("")}</ul>` : `<p class="muted small">אין משתמשים מאושרים עדיין.</p>`}
+    </section>`;
+  };
+  const btn = (u, status, label, cls = "") => `<button class="btn-ghost ${cls}" data-user="${esc(u.email)}" data-status="${status}" ${S.admin.busy ? "disabled" : ""}>${label}</button>`;
+  return `<div class="admin-stack">
+    <form class="panel" id="addUserForm"><h2>הוספת משתמש</h2>
+      <div class="add-row"><label class="sr-only" for="newUser">מייל להוספה</label><input id="newUser" type="email" dir="ltr" placeholder="name@example.com" autocomplete="off"><button class="primary" type="submit">אישור גישה</button></div>
+      <p class="small muted">המשתמש יקבל מייל שהגישה אושרה, ויוכל להיכנס עם קוד שנשלח אליו.</p>
+    </form>
+    ${group("pending", "ממתינים לאישור", (u) => btn(u, "approved", "אישור", "go") + btn(u, "blocked", "דחייה"))}
+    ${group("approved", "מורשים", (u) => btn(u, "blocked", "הסרת גישה"))}
+    ${group("blocked", "נדחו / הוסרו", (u) => btn(u, "approved", "אישור") + btn(u, "delete", "מחיקה"))}
+  </div>`;
+}
+
+function renderComms() {
+  const A = S.admin, comms = A.comms;
+  if (!comms) return `<p class="muted">טוען…</p>`;
+  const needle = A.cq.trim();
+  const list = comms.filter((c) => !needle || c.name.includes(needle));
+  return `<div class="admin-stack">
+    <p class="small muted">סמנו אילו קהילות מוצגות באתר, ולחצו "אנשי קשר" כדי לערוך. השינויים נשמרים בקובץ אנשי הקשר בדרייב.</p>
+    <label class="sr-only" for="cq">חיפוש קהילה</label>
+    <input id="cq" class="admin-search" type="search" placeholder="חיפוש קהילה" value="${esc(A.cq)}" autocomplete="off">
+    <ul class="comm-list">${list.map((c) => `<li class="${c.visible ? "" : "off"}">
+      <label class="switch"><input type="checkbox" data-vis="${esc(c.key)}" ${c.visible ? "checked" : ""} ${A.busy ? "disabled" : ""}><span>${esc(c.name)}</span></label>
+      <span class="small muted num">${c.st}/${c.to} · ${c.people.length ? c.people.length + " אנשי קשר" : "אין איש קשר"}</span>
+      <button class="btn-ghost" data-edit="${esc(c.key)}">אנשי קשר</button>
+    </li>`).join("")}</ul>
+  </div>`;
+}
+
+function renderEditor() {
+  const A = S.admin, ed = A.edit;
+  const row = (p, i) => `<fieldset class="person-edit" data-i="${i}"><legend>איש קשר ${i + 1}</legend>
+    <label>שם<input name="name" value="${esc(p.name)}" autocomplete="off"></label>
+    <label>טלפונים <span class="small muted">(כמה מספרים – מפרידים בפסיק)</span><input name="phones" dir="ltr" inputmode="tel" value="${esc(p.phones.join(", "))}" autocomplete="off"></label>
+    <label>מייל<input name="email" type="email" dir="ltr" value="${esc(p.email)}" autocomplete="off"></label>
+    <button type="button" class="btn-ghost danger" data-del-person="${i}">הסרת איש הקשר</button>
+  </fieldset>`;
+  return `<form class="panel" id="editForm" novalidate>
+    <h2>אנשי קשר – ${esc(ed.name)}</h2>
+    ${ed.people.map(row).join("")}
+    <button type="button" class="btn-ghost" data-act="addPerson">+ הוספת איש קשר</button>
+    <div class="add-row"><button class="primary" type="submit" ${A.busy ? "disabled" : ""}>שמירה</button><button type="button" class="btn-ghost" data-act="cancelEdit">ביטול</button></div>
+  </form>`;
+}
+
+function readEditor(form) {
+  return [...form.querySelectorAll(".person-edit")].map((fs) => ({
+    name: fs.querySelector("[name=name]").value.trim(),
+    phones: fs.querySelector("[name=phones]").value.split(/[,;\/]/).map((x) => x.trim()).filter(Boolean),
+    email: fs.querySelector("[name=email]").value.trim(),
+  }));
+}
+function saveContacts(form) {
+  const ed = S.admin.edit;
+  ed.people = readEditor(form);
+  adminAction("saveContacts", { key: ed.key, name: ed.name, people: ed.people }, () => {
+    const c = S.admin.comms?.find((x) => x.key === ed.key);
+    if (c) c.people = ed.people.filter((p) => p.name || p.phones.length || p.email);
+    S.admin.edit = null;
+    refresh();
+  }, "אנשי הקשר נשמרו.");
+}
+async function openEditor(key) {
+  S.view = "__admin"; S.admin.tab = "comms";
+  if (!S.admin.comms) { render(); await loadAdmin(); }
+  const c = S.admin.comms?.find((x) => x.key === key) || S.list.find((x) => x.key === key);
+  if (!c) return;
+  S.admin.edit = { key: c.key, name: c.name, people: c.people.length ? c.people.map((p) => ({ ...p, phones: [...p.phones] })) : [{ name: "", phones: [], email: "" }] };
+  S.admin.msg = "";
+  render(); window.scrollTo(0, 0);
+}
+
+// ─── render ────────────────────────────────────────────────────
+let focusId = null, caret = null;
+function render() {
+  if (!S.token) return;
+  if (!S.data && S.view !== "__admin") {
+    app.innerHTML = S.error ? `<div class="notice err" role="alert">${S.error === "layout" ? ERR.LAYOUT : "אין חיבור לשרת. מנסה שוב…"}</div>` : `<p class="muted">טוען נתונים…</p>`;
+    return;
+  }
+  const a = document.activeElement;
+  if (a && a.id && app.contains(a)) { focusId = a.id; caret = a.selectionStart ?? null; } else focusId = null;
+  app.innerHTML = S.view === "__admin" ? renderAdmin() : S.view ? renderDetail() : renderHome();
+  adminBtn.textContent = S.view === "__admin" ? "חזרה" : "ניהול";
+  if (focusId) { const el = document.getElementById(focusId); if (el) { el.focus({ preventScroll: true }); if (caret !== null && el.setSelectionRange) try { el.setSelectionRange(caret, caret); } catch {} } }
+}
+
+// ─── events ────────────────────────────────────────────────────
+app.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-open],[data-chip],[data-act],[data-copy],[data-tab],[data-user],[data-edit],[data-del-person]");
+  if (!t) return;
+  if (t.dataset.open) { S.view = t.dataset.open; render(); window.scrollTo(0, 0); return; }
+  if (t.dataset.chip !== undefined) {
+    S.chip = t.dataset.chip; render();
+    if (t.classList.contains("see-all")) document.getElementById("all")?.scrollIntoView({ block: "start" });
+    return;
+  }
+  if (t.dataset.copy) {
+    try { await navigator.clipboard.writeText(t.dataset.copy); toast("המספר הועתק"); }
+    catch { const n = t.parentElement.querySelector(".phone-num"); if (n) { const r = document.createRange(); r.selectNodeContents(n); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } toast("המספר מסומן – העתיקו אותו"); }
+    return;
+  }
+  if (t.dataset.tab) { S.admin.tab = t.dataset.tab; S.admin.edit = null; S.admin.msg = ""; render(); return loadAdmin(); }
+  if (t.dataset.user) {
+    const labels = { approved: "המשתמש אושר.", blocked: "הגישה הוסרה.", delete: "המשתמש נמחק." };
+    return adminAction("setUser", { email: t.dataset.user, status: t.dataset.status }, (out) => { S.admin.users = out.users; }, labels[t.dataset.status]);
+  }
+  if (t.dataset.edit) return openEditor(t.dataset.edit);
+  if (t.dataset.delPerson !== undefined) {
+    const ed = S.admin.edit; ed.people = readEditor(document.getElementById("editForm"));
+    ed.people.splice(Number(t.dataset.delPerson), 1); render(); return;
+  }
+  const act = t.dataset.act;
+  if (act === "refresh") return refresh(true);
+  if (act === "restart") { S.login.step = "email"; return renderLogin(); }
+  if (act === "addPerson") { const ed = S.admin.edit; ed.people = readEditor(document.getElementById("editForm")); ed.people.push({ name: "", phones: [], email: "" }); render(); return; }
+  if (act === "cancelEdit") { S.admin.edit = null; S.admin.msg = ""; render(); return; }
+  if (act === "back") {
+    if (S.view === "__admin" && S.admin.edit) { S.admin.edit = null; render(); return; }
+    S.view = null; render(); document.getElementById("all")?.scrollIntoView({ block: "start" });
+  }
+});
+app.addEventListener("input", (e) => {
+  if (e.target.id === "q") { S.q = e.target.value; render(); }
+  if (e.target.id === "cq") { S.admin.cq = e.target.value; render(); }
+});
+app.addEventListener("change", (e) => {
+  if (e.target.id === "sort") { S.sort = e.target.value; render(); }
+  if (e.target.dataset.vis) {
+    const key = e.target.dataset.vis, visible = e.target.checked;
+    adminAction("setVisible", { key, visible }, () => {
+      const c = S.admin.comms.find((x) => x.key === key); if (c) c.visible = visible;
+      refresh();
+    }, visible ? "הקהילה תוצג באתר." : "הקהילה הוסתרה מהאתר.");
+  }
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && S.view && S.view !== "__admin") { S.view = null; render(); } });
+function toast(msg) {
+  const el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); el.textContent = msg;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 1800);
+}
+
+// accessibility menu (preferences live in this browser only)
+const root = document.documentElement;
+const a11yBtn = document.getElementById("a11yBtn"), panel = document.getElementById("a11yPanel");
+const prefs = (() => { try { return JSON.parse(localStorage.getItem("a11y") || "{}"); } catch { return {}; } })();
+function applyPrefs() {
+  root.classList.toggle("big-text", !!prefs.big); root.classList.toggle("hi-contrast", !!prefs.contrast);
+  document.getElementById("optBig").setAttribute("aria-pressed", !!prefs.big);
+  document.getElementById("optContrast").setAttribute("aria-pressed", !!prefs.contrast);
+  try { localStorage.setItem("a11y", JSON.stringify(prefs)); } catch {}
+}
+a11yBtn.addEventListener("click", () => { panel.hidden = !panel.hidden; a11yBtn.setAttribute("aria-expanded", !panel.hidden); if (!panel.hidden) panel.querySelector("button").focus(); });
+document.getElementById("optBig").addEventListener("click", () => { prefs.big = !prefs.big; applyPrefs(); });
+document.getElementById("optContrast").addEventListener("click", () => { prefs.contrast = !prefs.contrast; applyPrefs(); });
+panel.addEventListener("keydown", (e) => { if (e.key === "Escape") { panel.hidden = true; a11yBtn.setAttribute("aria-expanded", "false"); a11yBtn.focus(); } });
+applyPrefs();
+
+// auto refresh every 15 s while the app is visible; refresh at once when returning to it
+setInterval(() => { if (!document.hidden) refresh(); }, REFRESH_MS);
+setInterval(() => { if (!document.hidden) updateLive(); }, 5000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+
+// boot
+(() => {
+  const token = store.get();
+  if (!token) return renderLogin();
+  S.token = token; logoutBtn.hidden = false;
+  app.innerHTML = `<p class="muted">טוען נתונים…</p>`;
+  refresh();
+})();
+</script>
+</body>
+</html>
