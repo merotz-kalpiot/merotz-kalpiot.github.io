@@ -42,6 +42,8 @@
   --danger: #c4161c;
   --danger-soft: #fde6e6;
   --call: #157347;
+  --t1: #e9edf9; --t2: #e3f4e8; --t3: #fdeedd; --t4: #e2f3f1; --t5: #fbf4d6; --t6: #fbe4ea; --t7: #ece6f8;
+  --lb-orange: #e08a1e;
   --font: "Heebo", "Arial Hebrew", Arial, sans-serif;
   --radius: 14px;
   --shadow: 0 1px 2px rgb(20 24 49 / 7%), 0 2px 6px rgb(20 24 49 / 6%);
@@ -52,6 +54,7 @@
     --text: #e9ebf5; --muted: #a2a8c3; --brand: #a9b5f0; --brand-soft: #232a4d;
     --ok: #4cc58a; --ok-soft: #133022; --warn: #f0a742; --warn-soft: #34260f;
     --danger: #ff6b70; --danger-soft: #3b1618; --call: #1f8f59;
+    --t1: #1d2442; --t2: #15291d; --t3: #33240f; --t4: #12292a; --t5: #2e2a12; --t6: #33161d; --t7: #261d3b;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%);
     color-scheme: dark;
   }
@@ -61,6 +64,7 @@
   --text: #e9ebf5; --muted: #a2a8c3; --brand: #a9b5f0; --brand-soft: #232a4d;
   --ok: #4cc58a; --ok-soft: #133022; --warn: #f0a742; --warn-soft: #34260f;
   --danger: #ff6b70; --danger-soft: #3b1618; --call: #1f8f59;
+  --t1: #1d2442; --t2: #15291d; --t3: #33240f; --t4: #12292a; --t5: #2e2a12; --t6: #33161d; --t7: #261d3b;
   --shadow: 0 1px 2px rgb(0 0 0 / 40%);
   color-scheme: dark;
 }
@@ -273,6 +277,28 @@ body { margin: 0; }
 @media (prefers-reduced-motion: no-preference) { .refresh[aria-busy="true"] svg { animation: spin 1s linear infinite; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+
+.kpi.k1 { background: var(--t1); } .kpi.k2 { background: var(--t2); } .kpi.k3 { background: var(--t3); }
+.kpi.k4 { background: var(--t4); } .kpi.k5 { background: var(--t5); } .kpi.k6 { background: var(--t6); }
+.lb { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.lb-title { background: var(--navy); color: var(--navy-ink); font-weight: 900; padding: 10px 14px; border-bottom: 3px solid var(--red); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lb-title small { font-weight: 600; opacity: .85; font-size: .78rem; }
+.lb-list { list-style: none; margin: 0; padding: 6px 10px 10px; }
+@media (min-width: 760px) { .lb-list { column-count: 2; column-gap: 18px; } }
+@media (min-width: 1060px) { .lb-list { column-count: 3; } }
+.lb-row { break-inside: avoid; }
+.lb-row button { width: 100%; display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto 3.2em 52px; gap: 8px; align-items: center; min-height: 40px; padding: 4px 6px; background: none; border: 0; border-bottom: 1px solid var(--border); text-align: start; cursor: pointer; border-radius: 6px; }
+.lb-row button:hover { background: var(--surface-2); }
+.lb-row.lb-top button { background: var(--t5); }
+.lb-rank { font-weight: 900; font-variant-numeric: tabular-nums; text-align: center; }
+.lb-name { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-state { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+.lb-state.done { color: var(--ok); font-weight: 800; }
+.lb-pct { font-weight: 900; font-variant-numeric: tabular-nums; text-align: end; }
+.lb-bar { height: 12px; border-radius: 3px; background: repeating-linear-gradient(90deg, var(--surface-2) 0 4px, transparent 4px 6px); border: 1px solid var(--border); overflow: hidden; }
+.lb-bar i { display: block; height: 100%; }
+.g-done .lb-bar i { background: var(--ok); } .g-high .lb-bar i { background: var(--lb-orange); } .g-low .lb-bar i { background: var(--danger); }
+@media (max-width: 400px) { .lb-row button { grid-template-columns: 2em minmax(0, 1fr) 3em 48px; } .lb-state { display: none; } }
 .ok-msg { color: var(--ok); font-weight: 700; }
 .brand-name { white-space: nowrap; }
 @media (max-width: 520px) {
@@ -569,11 +595,25 @@ function renderHome() {
   const days = daysToElection();
   out.push(`<section class="kpis" aria-label="סיכום הגוש">
     <div class="kpi main"><div class="l">אחוז איוש בגוש</div><div class="v">${pctText(to ? st / to : null)}</div><div class="s num">${st} מתוך ${to} משמרות</div></div>
-    <div class="kpi"><div class="l">נותרו לאיוש</div><div class="v">${Math.max(0, to - st)}</div><div class="s">משמרות פתוחות</div></div>
-    <div class="kpi"><div class="l">משקיפים</div><div class="v">${obsSt}<small> / ${obsTo}</small></div><div class="s">אוישו מתוך הנדרש</div></div>
-    <div class="kpi"><div class="l">קהילות בתנועה</div><div class="v">${started}<small> / ${cs.length}</small></div><div class="s">כבר אוישה משמרת</div></div>
-    <div class="kpi"><div class="l">קהילות שסיימו</div><div class="v">${done}<small> / ${cs.length}</small></div><div class="s">100% איוש</div></div>
-    <div class="kpi"><div class="l">ימים לבחירות</div><div class="v">${days > 0 ? days : days === 0 ? "היום" : "—"}</div><div class="s">27.10.2026</div></div>
+    <div class="kpi k3"><div class="l">נותרו לאיוש</div><div class="v">${Math.max(0, to - st)}</div><div class="s">משמרות פתוחות</div></div>
+    <div class="kpi k4"><div class="l">משקיפים</div><div class="v">${obsSt}<small> / ${obsTo}</small></div><div class="s">אוישו מתוך הנדרש</div></div>
+    <div class="kpi k6"><div class="l">קהילות בתנועה</div><div class="v">${started}<small> / ${cs.length}</small></div><div class="s">כבר אוישה משמרת</div></div>
+    <div class="kpi k5"><div class="l">קהילות שסיימו</div><div class="v">${done}<small> / ${cs.length}</small></div><div class="s">100% איוש</div></div>
+    <div class="kpi k1"><div class="l">ימים לבחירות</div><div class="v">${days > 0 ? days : days === 0 ? "היום" : "—"}</div><div class="s">27.10.2026</div></div>
+  </section>`);
+
+  // 🏆 race table: everyone ranked by % staffed, like the dashboard sheet
+  const ranked = cs.filter((c) => c.to > 0).sort((a, b) => b.pct - a.pct || b.st - a.st || a.name.localeCompare(b.name, "he"));
+  const medal = ["🥇", "🥈", "🥉"];
+  out.push(`<section class="lb" aria-labelledby="lb-h">
+    <div class="lb-title"><span id="lb-h">🏆 טבלת הקהילות – מי מסיים ראשון?</span><small>לחיצה על קהילה פותחת את הפרטים</small></div>
+    <ol class="lb-list">${ranked.map((c, i) => {
+      const grade = c.pct >= 1 ? "g-done" : c.pct >= 0.5 ? "g-high" : c.pct > 0 ? "g-low" : "g-zero";
+      const state = c.status === "done" ? '<span class="lb-state done">הושלם ✓</span>' : c.st > 0 ? '<span class="lb-state">בתהליך</span>' : '<span class="lb-state">טרם התחיל</span>';
+      return `<li class="lb-row ${grade}${i < 3 && c.st > 0 ? " lb-top" : ""}"><button data-open="${esc(c.key)}" aria-label="מקום ${i + 1}: ${esc(c.name)}, ${pctText(c.pct)}">
+        <span class="lb-rank">${i < 3 && c.st > 0 ? medal[i] : i + 1}</span><span class="lb-name">${esc(c.name)}</span>${state}<span class="lb-pct">${pctText(c.pct)}</span><span class="lb-bar" aria-hidden="true"><i style="width:${Math.round(c.pct * 100)}%"></i></span>
+      </button></li>`;
+    }).join("")}</ol>
   </section>`);
 
   const notStarted = cs.filter((c) => c.status === "notStarted").sort((a, b) => b.to - a.to);
